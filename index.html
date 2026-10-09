@@ -1,0 +1,578 @@
+import React, { useState, useEffect } from 'react';
+import {
+  Landmark, BookOpen, Award, Users, Mail, Globe, Shield,
+  Search, CheckCircle2, AlertCircle, Scroll,
+  GraduationCap, Menu, X, BookMarked, Sparkles
+} from 'lucide-react';
+
+export default function App() {
+  const [activeSection, setActiveSection] = useState('inicio');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  // Estados para o Verificador de Honrarias
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResult, setSearchResult] = useState(null);
+  const [hasSearched, setHasSearched] = useState(false);
+
+  // Base de dados documentada da Chancelaria para consulta pública
+  const officialRecords = [
+    {
+      id: 'AFCHL-GL-2024',
+      name: 'Gazeta Lusófona (Dir. Adélio Amaro)',
+      degree: 'Moção de Honra ao Mérito',
+      date: '30 de Abril de 2024',
+      venue: 'Centro Cultural de Belém (CCB) - Lisboa, Portugal',
+      status: 'Autêntico e Registrado',
+      purpose: 'Dedicação aos valores humanos, cívicos, morais e defesa da paz no Fórum Portugal Nação Global.'
+    },
+    {
+      id: 'AFCHL-HC-2026',
+      name: 'Corpo Técnico e Jurisconsultos TAMCES',
+      degree: 'Doutor Honoris Causa em Direito Nobiliário Internacional',
+      date: '03 de Março de 2026',
+      venue: 'Sessão Solene de Chancelaria Arbitral - Brasil',
+      status: 'Autêntico e Registrado',
+      purpose: 'Notório saber e contribuição científica ao Direito Nobiliário Internacional e mediação pacífica.'
+    },
+    {
+      id: 'AFCHL-PM-2024',
+      name: 'Paula Machado (RDP Internacional / RTP)',
+      degree: 'Moção de Honra ao Mérito',
+      date: 'Outubro de 2024',
+      venue: 'Chancelaria Sul-Americana - Rio de Janeiro',
+      status: 'Autêntico e Registrado',
+      purpose: 'Mérito na comunicação pública, salvaguarda do idioma e integração comunitária da diáspora lusófona.'
+    },
+    {
+      id: 'AFCHL-SC-2024',
+      name: 'Sónia Crisóstomo',
+      degree: 'Moção de Honra ao Mérito',
+      date: 'Maio de 2024',
+      venue: 'Delegação Cultural em Portugal',
+      status: 'Autêntico e Registrado',
+      purpose: 'Atuação destacada em prol do empreendedorismo social, literatura e valorização do intercâmbio luso-brasileiro.'
+    },
+    {
+      id: 'AFCHL-CO-PARIS',
+      name: 'Carlos Otero',
+      degree: 'Embaixador Honorário da Cultura',
+      date: 'Chancelaria Internacional',
+      venue: 'Delegação Artística e Cultural - Paris, França',
+      status: 'Autêntico e Registrado',
+      purpose: 'Trajetória consagrada nas artes líricas, encenação operística e propagação internacional da lusofonia.'
+    }
+  ];
+
+  const handleVerify = (e) => {
+    e.preventDefault();
+    if (!searchQuery.trim()) return;
+
+    const term = searchQuery.trim().toLowerCase();
+    const result = officialRecords.find(
+      record => record.id.toLowerCase().includes(term) || record.name.toLowerCase().includes(term)
+    );
+
+    setSearchResult(result || null);
+    setHasSearched(true);
+  };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 40);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToSection = (id) => {
+    setActiveSection(id);
+    setIsMobileMenuOpen(false);
+    const element = document.getElementById(id);
+    if (element) {
+      window.scrollTo({
+        top: element.offsetTop - 80,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-amber-500/30">
+      
+      {/* Top Banner de Compromisso Internacional */}
+      <div className="bg-gradient-to-r from-amber-700 via-amber-600 to-amber-700 text-slate-950 text-xs py-2 px-4 text-center font-semibold tracking-wider flex items-center justify-center gap-2">
+        <Globe className="w-3.5 h-3.5" />
+        <span>INSTITUIÇÃO SIGNATÁRIA DO PACTO GLOBAL DAS NAÇÕES UNIDAS (ONU) DESDE JULHO DE 2014</span>
+      </div>
+
+      {/* Navegação Principal */}
+      <header className={`sticky top-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-slate-950/95 backdrop-blur-md shadow-2xl border-b border-amber-900/30 py-3' : 'bg-slate-950 py-5'}`}>
+        <div className="container mx-auto px-4 md:px-8 flex justify-between items-center">
+          <div className="flex items-center space-x-3 cursor-pointer" onClick={() => scrollToSection('inicio')}>
+            <div className="w-10 h-10 rounded-full border border-amber-500/60 bg-gradient-to-br from-amber-500 to-amber-700 flex items-center justify-center shadow-lg">
+              <Landmark className="text-slate-950 w-5 h-5" />
+            </div>
+            <div>
+              <span className="text-xl md:text-2xl font-serif font-bold text-amber-100 tracking-wider">AFCHL</span>
+              <p className="text-[10px] text-amber-500 uppercase tracking-widest font-semibold">Academia Lucentina • Rio de Janeiro</p>
+            </div>
+          </div>
+
+          <nav className="hidden lg:flex space-x-8">
+            {[
+              { id: 'inicio', label: 'Início' },
+              { id: 'historia', label: 'Sobre e Fundação' },
+              { id: 'governanca', label: 'Governança e Membros' },
+              { id: 'honrarias', label: 'Chancelaria' },
+              { id: 'validador', label: 'Consulta Pública' },
+              { id: 'publicacoes', label: 'Biblioteca' },
+              { id: 'contato', label: 'Contato' }
+            ].map(item => (
+              <button
+                key={item.id}
+                onClick={() => scrollToSection(item.id)}
+                className={`text-xs uppercase tracking-wider font-semibold transition-all hover:text-amber-400 ${
+                  activeSection === item.id ? 'text-amber-400 border-b-2 border-amber-400 pb-1' : 'text-slate-300'
+                }`}
+              >
+                {item.label}
+              </button>
+            ))}
+          </nav>
+
+          <button 
+            className="lg:hidden text-amber-400"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            aria-label="Abrir Menu"
+          >
+            {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
+        </div>
+
+        {/* Menu Mobile */}
+        {isMobileMenuOpen && (
+          <div className="lg:hidden bg-slate-900 border-b border-amber-900/40 px-6 py-6 space-y-4">
+            {[
+              { id: 'inicio', label: 'Início' },
+              { id: 'historia', label: 'Sobre e Fundação' },
+              { id: 'governanca', label: 'Governança e Membros' },
+              { id: 'honrarias', label: 'Chancelaria' },
+              { id: 'validador', label: 'Consulta Pública' },
+              { id: 'publicacoes', label: 'Biblioteca' },
+              { id: 'contato', label: 'Contato' }
+            ].map(item => (
+              <button
+                key={item.id}
+                onClick={() => scrollToSection(item.id)}
+                className="block w-full text-left font-serif text-lg text-slate-200 hover:text-amber-400"
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
+        )}
+      </header>
+
+      {/* Hero Section */}
+      <section id="inicio" className="relative pt-20 pb-32 overflow-hidden border-b border-amber-900/20">
+        <div className="absolute inset-0 bg-[radial-gradient(#d97706_1px,transparent_1px)] [background-size:24px_24px] opacity-10 pointer-events-none" />
+        
+        <div className="container mx-auto px-4 md:px-8 relative z-10 text-center max-w-4xl">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-950/60 border border-amber-500/30 text-amber-400 text-xs tracking-widest uppercase mb-8">
+            <Sparkles className="w-3.5 h-3.5" />
+            <span>Fundada em 12 de Dezembro de 2013</span>
+          </div>
+
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-serif font-bold text-white mb-6 leading-tight">
+            Academia de Filosofia e Ciências Humanísticas <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-amber-500 to-amber-200">Lucentina</span>
+          </h1>
+
+          <p className="text-amber-500/90 font-serif italic text-xl md:text-2xl mb-8">
+            "Promover a Educação Cultural e os Valores Humanos"
+          </p>
+
+          <p className="text-slate-300 text-base md:text-lg leading-relaxed mb-12 max-w-3xl mx-auto font-light">
+            Entidade dinástica e patrimônio histórico e cultural da Real Casa de Lucena. Instituição autônoma voltada ao fomento do pensamento humanístico, à preservação genealógica e ao reconhecimento do mérito cívico.
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <button 
+              onClick={() => scrollToSection('validador')}
+              className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-slate-950 font-bold rounded shadow-xl hover:shadow-amber-900/30 transition-all flex items-center justify-center gap-2"
+            >
+              <Search className="w-4 h-4" />
+              Verificar Registro de Honraria
+            </button>
+            <button 
+              onClick={() => scrollToSection('historia')}
+              className="w-full sm:w-auto px-8 py-4 border border-amber-600/50 hover:bg-amber-950/40 text-amber-300 font-semibold rounded transition-all"
+            >
+              Conhecer a Instituição
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* Sobre e Fundação */}
+      <section id="historia" className="py-24 bg-slate-900 border-b border-amber-900/20">
+        <div className="container mx-auto px-4 md:px-8 max-w-6xl">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <div>
+              <span className="text-amber-500 text-xs font-bold tracking-widest uppercase">História e Missão</span>
+              <h2 className="text-3xl md:text-5xl font-serif font-bold text-white mt-2 mb-6">
+                Compromisso com o Conhecimento e a Dignidade Humana
+              </h2>
+              <div className="space-y-4 text-slate-300 text-sm md:text-base leading-relaxed">
+                <p>
+                  Constituída em 12 de dezembro de 2013 na cidade do Rio de Janeiro pelo jornalista, escritor e psicanalista <strong>D. Cláudio Magnus Augustus de Saxe-Altenburg Bragança de Lucena</strong>, a AFCHL nasceu para articular a reflexão filosófica e a defesa das tradições humanistas.
+                </p>
+                <p>
+                  Como entidade dinástica e patrimônio imaterial associado à Real Casa de Lucena, a academia atua como ponte cultural entre as raízes ibéricas e o espaço cívico luso-brasileiro, preservando manuscritos, linhagens e a memória coletiva de nossa sociedade.
+                </p>
+                <p className="bg-slate-950/60 p-4 border-l-2 border-amber-500 rounded text-slate-400 text-xs md:text-sm">
+                  <strong>Independência Estatutária:</strong> A AFCHL é uma organização não-governamental autônoma. Não recebe subvenções ou aportes financeiros de órgãos públicos, sustentando seus projetos educacionais exclusivamente pela cooperação de seus membros e voluntários.
+                </p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div className="bg-slate-950 p-6 rounded-lg border border-amber-900/30">
+                <Globe className="w-8 h-8 text-amber-500 mb-4" />
+                <h3 className="font-serif font-bold text-amber-200 text-lg mb-2">Pacto Global da ONU</h3>
+                <p className="text-slate-400 text-xs leading-relaxed">
+                  Signatária oficial das Nações Unidas, atuando com base nos 10 princípios de integridade, sustentabilidade e direitos fundamentais.
+                </p>
+              </div>
+
+              <div className="bg-slate-950 p-6 rounded-lg border border-amber-900/30">
+                <Shield className="w-8 h-8 text-amber-500 mb-4" />
+                <h3 className="font-serif font-bold text-amber-200 text-lg mb-2">Herança Dinástica</h3>
+                <p className="text-slate-400 text-xs leading-relaxed">
+                  Guarda e fomento do acervo moral da histórica Casa de Lucena-y-Veintimiglia e de seus foros genealógicos.
+                </p>
+              </div>
+
+              <div className="bg-slate-950 p-6 rounded-lg border border-amber-900/30">
+                <BookOpen className="w-8 h-8 text-amber-500 mb-4" />
+                <h3 className="font-serif font-bold text-amber-200 text-lg mb-2">Cursos Livres</h3>
+                <p className="text-slate-400 text-xs leading-relaxed">
+                  Realização de conferências formativas, seminários éticos e capacitação profissionalizante comunitária e voluntária.
+                </p>
+              </div>
+
+              <div className="bg-slate-950 p-6 rounded-lg border border-amber-900/30">
+                <Award className="w-8 h-8 text-amber-500 mb-4" />
+                <h3 className="font-serif font-bold text-amber-200 text-lg mb-2">Chancelaria Cívica</h3>
+                <p className="text-slate-400 text-xs leading-relaxed">
+                  Reconhecimento institucional solene através de Moções de Honra ao Mérito e concessão de graus acadêmicos de mérito.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Governança e Corpo Acadêmico */}
+      <section id="governanca" className="py-24 bg-slate-950 border-b border-amber-900/20">
+        <div className="container mx-auto px-4 md:px-8 max-w-6xl">
+          <div className="text-center max-w-3xl mx-auto mb-16">
+            <Users className="w-10 h-10 text-amber-500 mx-auto mb-3" />
+            <h2 className="text-3xl md:text-5xl font-serif font-bold text-white">Governança e Corpo Acadêmico</h2>
+            <p className="text-slate-400 mt-4 text-sm md:text-base">
+              A instituição estrutura-se em consonância com as corporações acadêmicas clássicas, acolhendo chefias dinásticas, juristas e expoentes da cultura internacional.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+            {/* Liderança Executiva */}
+            <div className="bg-slate-900/80 border border-amber-900/40 p-8 rounded-xl flex flex-col justify-between">
+              <div>
+                <span className="text-amber-500 text-xs font-bold tracking-widest uppercase">Presidência Fundadora</span>
+                <h3 className="text-xl font-serif font-bold text-white mt-2 mb-3">D. Cláudio Magnus Augustus</h3>
+                <p className="text-slate-400 text-xs leading-relaxed">
+                  De Saxe-Altenburg Bragança de Lucena. Jornalista, genealogista, historiador e psicanalista. Autor das obras de resgate nobiliárquico hispano-brasileiro e idealizador estatutário da AFCHL.
+                </p>
+              </div>
+              <div className="mt-6 pt-4 border-t border-slate-800 text-[11px] text-amber-400/80">
+                Mandato Institucional Vitalício
+              </div>
+            </div>
+
+            {/* Chancelaria-Geral */}
+            <div className="bg-slate-900/80 border border-amber-900/40 p-8 rounded-xl flex flex-col justify-between">
+              <div>
+                <span className="text-amber-500 text-xs font-bold tracking-widest uppercase">Chancelaria-Geral</span>
+                <h3 className="text-xl font-serif font-bold text-white mt-2 mb-3">Dr. Dom Ricardo Moraes de Resende</h3>
+                <p className="text-slate-400 text-xs leading-relaxed">
+                  Embaixador Honorário da Cultura da AFCHL no Brasil e no Exterior. Responsável pelas relações institucionais, diálogo com câmaras legislativas e instâncias arbitrais.
+                </p>
+              </div>
+              <div className="mt-6 pt-4 border-t border-slate-800 text-[11px] text-amber-400/80">
+                Chancelaria das Ordens e Méritos
+              </div>
+            </div>
+
+            {/* Chancelaria de Direitos Humanos */}
+            <div className="bg-slate-900/80 border border-amber-900/40 p-8 rounded-xl flex flex-col justify-between">
+              <div>
+                <span className="text-amber-500 text-xs font-bold tracking-widest uppercase">Chancelaria Temática</span>
+                <h3 className="text-xl font-serif font-bold text-white mt-2 mb-3">Prof. Dr. Emadilson de Jesus Santos</h3>
+                <p className="text-slate-400 text-xs leading-relaxed">
+                  Chanceler Honorário dos Direitos Humanos. Escritor, jurista eclesiástico e perito. Atua na articulação ética e alinhamento com as metas humanitárias da ONU.
+                </p>
+              </div>
+              <div className="mt-6 pt-4 border-t border-slate-800 text-[11px] text-amber-400/80">
+                Coordenação de Direitos Fundamentais
+              </div>
+            </div>
+          </div>
+
+          {/* Destaque Acadêmicos Beneméritos */}
+          <div className="bg-gradient-to-r from-amber-950/40 via-slate-900 to-amber-950/40 border border-amber-500/30 p-8 rounded-2xl">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+              <div>
+                <span className="text-amber-400 text-xs font-bold uppercase tracking-wider">Patronato de Honra</span>
+                <h3 className="text-2xl font-serif font-bold text-white mt-1">Acadêmicos Beneméritos</h3>
+                <p className="text-slate-300 text-sm mt-2 max-w-2xl">
+                  A AFCHL tem a honra de contar em seu quadro com membros da Casa Real Portuguesa: <strong>S.A.R. Dom Duarte Pio de Bragança</strong> (Duque de Bragança e Chefe da Casa Real) e o <strong>Infante Dom Miguel de Bragança</strong> (Duque de Viseu).
+                </p>
+              </div>
+              <div className="flex items-center gap-2 px-4 py-2 bg-amber-500/10 border border-amber-500/30 rounded text-amber-300 text-xs font-semibold">
+                <Shield className="w-4 h-4 text-amber-400" />
+                Vínculo Honorífico e Histórico
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Chancelaria e Honrarias */}
+      <section id="honrarias" className="py-24 bg-slate-900 border-b border-amber-900/20">
+        <div className="container mx-auto px-4 md:px-8 max-w-6xl">
+          <div className="text-center max-w-3xl mx-auto mb-16">
+            <Award className="w-10 h-10 text-amber-500 mx-auto mb-3" />
+            <h2 className="text-3xl md:text-5xl font-serif font-bold text-white">Chancelaria de Honrarias</h2>
+            <p className="text-slate-400 mt-4 text-sm md:text-base">
+              Distinções outorgadas com rigor de mérito para laurear cidadãos e entidades dedicados à elevação espiritual, científica e cívica da humanidade.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="bg-slate-950 p-8 rounded-xl border border-amber-900/30 hover:border-amber-500/50 transition-all">
+              <GraduationCap className="w-10 h-10 text-amber-500 mb-6" />
+              <h3 className="text-xl font-serif font-bold text-white mb-3">Doutor Honoris Causa</h3>
+              <p className="text-slate-400 text-xs leading-relaxed mb-4">
+                Grau acadêmico máximo conferido a personalidades de notório saber, com ênfase em áreas como o <em>Direito Nobiliário Internacional</em> e Direitos Humanos.
+              </p>
+              <span className="text-[11px] font-semibold text-amber-400 uppercase tracking-widest">Titulação de Alta Distinção</span>
+            </div>
+
+            <div className="bg-slate-950 p-8 rounded-xl border border-amber-900/30 hover:border-amber-500/50 transition-all">
+              <Scroll className="w-10 h-10 text-amber-500 mb-6" />
+              <h3 className="text-xl font-serif font-bold text-white mb-3">Moção de Honra ao Mérito</h3>
+              <p className="text-slate-400 text-xs leading-relaxed mb-4">
+                Comenda cívica conferida em eventos solenes internacionais (como o Centro Cultural de Belém, em Lisboa) para jornalistas, escritores e defensores da paz.
+              </p>
+              <span className="text-[11px] font-semibold text-amber-400 uppercase tracking-widest">Diploma Solene Chancelado</span>
+            </div>
+
+            <div className="bg-slate-950 p-8 rounded-xl border border-amber-900/30 hover:border-amber-500/50 transition-all">
+              <Globe className="w-10 h-10 text-amber-500 mb-6" />
+              <h3 className="text-xl font-serif font-bold text-white mb-3">Embaixador da Cultura</h3>
+              <p className="text-slate-400 text-xs leading-relaxed mb-4">
+                Prerrogativa diplomático-cultural conferida a artistas internacionais e promotores da herança lusófona na Europa e nas Américas.
+              </p>
+              <span className="text-[11px] font-semibold text-amber-400 uppercase tracking-widest">Missão Cultural Honorária</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Consulta Pública e Verificador de Autenticidade */}
+      <section id="validador" className="py-24 bg-slate-950 border-b border-amber-900/20">
+        <div className="container mx-auto px-4 md:px-8 max-w-4xl">
+          <div className="text-center mb-12">
+            <span className="text-amber-500 text-xs font-bold tracking-widest uppercase">Transparência e Autenticidade</span>
+            <h2 className="text-3xl md:text-5xl font-serif font-bold text-white mt-2">Validação de Registro Institucional</h2>
+            <p className="text-slate-400 text-sm mt-3">
+              Consulte a legitimidade de diplomas, moções e titulações expedidas pela Chancelaria da AFCHL inserindo o número do registro ou o nome do laureado.
+            </p>
+          </div>
+
+          <form onSubmit={handleVerify} className="flex flex-col sm:flex-row gap-3 mb-10">
+            <input 
+              type="text" 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Ex: AFCHL-GL-2024 ou nome do homenageado..."
+              className="flex-1 px-5 py-4 rounded bg-slate-900 border border-amber-900/50 text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 transition-all text-sm"
+            />
+            <button 
+              type="submit"
+              className="px-8 py-4 bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold rounded flex items-center justify-center gap-2 transition-all text-sm"
+            >
+              <Search className="w-4 h-4" />
+              Consultar
+            </button>
+          </form>
+
+          {/* Resultado da Busca */}
+          {hasSearched && (
+            <div className="mt-8 transition-all">
+              {searchResult ? (
+                <div className="bg-slate-900 border-2 border-emerald-500/40 rounded-xl p-8 shadow-2xl relative overflow-hidden">
+                  <div className="absolute top-0 right-0 bg-emerald-500/10 text-emerald-400 text-[11px] font-bold uppercase tracking-wider px-4 py-1.5 border-b border-l border-emerald-500/30 flex items-center gap-1.5">
+                    <CheckCircle2 className="w-3.5 h-3.5" /> Registro Válido
+                  </div>
+
+                  <h3 className="text-2xl font-serif font-bold text-white mb-2">{searchResult.name}</h3>
+                  <div className="text-amber-400 font-semibold text-sm mb-6 flex items-center gap-2">
+                    <Award className="w-4 h-4" /> {searchResult.degree}
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-slate-300 border-t border-slate-800 pt-6">
+                    <div>
+                      <span className="text-slate-500 uppercase tracking-widest block mb-1">Identificador Chancelado:</span>
+                      <strong className="text-amber-300 font-mono text-sm">{searchResult.id}</strong>
+                    </div>
+                    <div>
+                      <span className="text-slate-500 uppercase tracking-widest block mb-1">Data da Concessão:</span>
+                      <strong>{searchResult.date}</strong>
+                    </div>
+                    <div>
+                      <span className="text-slate-500 uppercase tracking-widest block mb-1">Local / Fórum:</span>
+                      <strong>{searchResult.venue}</strong>
+                    </div>
+                    <div>
+                      <span className="text-slate-500 uppercase tracking-widest block mb-1">Motivação no Livro de Registro:</span>
+                      <p className="text-slate-300 mt-1">{searchResult.purpose}</p>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="bg-slate-900 border border-rose-500/30 rounded-xl p-8 text-center">
+                  <AlertCircle className="w-10 h-10 text-rose-500 mx-auto mb-3" />
+                  <h4 className="font-serif font-bold text-white text-lg">Registro Não Localizado no Acervo Digital</h4>
+                  <p className="text-slate-400 text-xs mt-2 max-w-md mx-auto">
+                    Não encontramos um assentamento direto com o termo "{searchQuery}". Para validação de diplomas físicos emitidos em livros manuscritos antigos, consulte nossa Chancelaria de Registros.
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* Publicações e Biblioteca */}
+      <section id="publicacoes" className="py-24 bg-slate-900 border-b border-amber-900/20">
+        <div className="container mx-auto px-4 md:px-8 max-w-6xl">
+          <div className="text-center max-w-3xl mx-auto mb-16">
+            <BookMarked className="w-10 h-10 text-amber-500 mx-auto mb-3" />
+            <h2 className="text-3xl md:text-5xl font-serif font-bold text-white">Publicações e Memória Histórica</h2>
+            <p className="text-slate-400 mt-4 text-sm md:text-base">
+              Obras de pesquisa genealógica, heráldica e ensaios historiográficos produzidos pelo corpo de acadêmicos da AFCHL.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="bg-slate-950 p-8 rounded-xl border border-amber-900/30 flex flex-col justify-between">
+              <div>
+                <span className="text-amber-500 text-xs font-bold uppercase tracking-wider">Historiografia e Genealogia</span>
+                <h3 className="text-2xl font-serif font-bold text-white mt-2 mb-4">
+                  Personagens da Nobreza Hispânica Luso-Brasileira
+                </h3>
+                <p className="text-slate-400 text-sm leading-relaxed mb-4">
+                  De autoria de <strong>D. Augustus Bragança de Lucena</strong>. Obra essencial que reconstrói os laços aristocráticos entre a Península Ibérica e o Brasil, demonstrando a nobreza histórica como parte integrante da formação sociopolítica e cultural da nação brasileira.
+                </p>
+              </div>
+              <div className="pt-6 border-t border-slate-800 text-xs text-amber-400">
+                Disponível na plataforma editorial independente UICLAP
+              </div>
+            </div>
+
+            <div className="bg-slate-950 p-8 rounded-xl border border-amber-900/30 flex flex-col justify-between">
+              <div>
+                <span className="text-amber-500 text-xs font-bold uppercase tracking-wider">Tratado Genealógico</span>
+                <h3 className="text-2xl font-serif font-bold text-white mt-2 mb-4">
+                  E-Book “Pró-Memóriam”
+                </h3>
+                <p className="text-slate-400 text-sm leading-relaxed mb-4">
+                  Estudo detalhado sobre conceitos fundamentais de genealogia, parentesco em linha direta e colateral, heráldica aplicada e a relevância da preservação da memória das famílias na posteridade.
+                </p>
+              </div>
+              <div className="pt-6 border-t border-slate-800 text-xs text-amber-400">
+                Acervo Digital do Supremo Consistório e AFCHL
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Contato Institucional */}
+      <section id="contato" className="py-24 bg-slate-950">
+        <div className="container mx-auto px-4 md:px-8 max-w-4xl">
+          <div className="text-center mb-12">
+            <Mail className="w-10 h-10 text-amber-500 mx-auto mb-3" />
+            <h2 className="text-3xl md:text-5xl font-serif font-bold text-white">Chancelaria e Expediente</h2>
+            <p className="text-slate-400 text-sm mt-3">
+              Entre em contato formal com a presidência, chancelarias temáticas ou secretaria acadêmica.
+            </p>
+          </div>
+
+          <form onSubmit={(e) => { e.preventDefault(); alert('Mensagem enviada com sucesso ao expediente da AFCHL.'); }} className="space-y-6 bg-slate-900 p-8 md:p-12 rounded-2xl border border-amber-900/30">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Nome Completo</label>
+                <input required type="text" className="w-full px-4 py-3 rounded bg-slate-950 border border-slate-800 text-white focus:outline-none focus:border-amber-500 text-sm" placeholder="Seu nome completo" />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">E-mail Institucional</label>
+                <input required type="email" className="w-full px-4 py-3 rounded bg-slate-950 border border-slate-800 text-white focus:outline-none focus:border-amber-500 text-sm" placeholder="email@dominio.com" />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Departamento de Destino</label>
+              <select className="w-full px-4 py-3 rounded bg-slate-950 border border-slate-800 text-slate-300 focus:outline-none focus:border-amber-500 text-sm">
+                <option>Presidência e Secretaria Geral</option>
+                <option>Chancelaria de Honrarias e Indicações de Mérito</option>
+                <option>Chancelaria de Direitos Humanos e Pacto Global ONU</option>
+                <option>Comissão de Genealogia e Publicações Históricas</option>
+                <option>Relações Internacionais e Diplomacia Cultural</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Mensagem</label>
+              <textarea required rows={5} className="w-full px-4 py-3 rounded bg-slate-950 border border-slate-800 text-white focus:outline-none focus:border-amber-500 text-sm resize-none" placeholder="Exponha sua consulta ou solicitação institucional..."></textarea>
+            </div>
+
+            <button type="submit" className="w-full py-4 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-slate-950 font-bold rounded uppercase tracking-wider text-xs transition-all shadow-lg">
+              Enviar Comunicação Oficial
+            </button>
+          </form>
+        </div>
+      </section>
+
+      {/* Rodapé Oficial */}
+      <footer className="bg-black py-12 border-t border-amber-900/30 text-center text-xs text-slate-500">
+        <div className="container mx-auto px-4 max-w-4xl space-y-4">
+          <div className="flex justify-center items-center gap-2 text-amber-400 font-serif font-bold text-base">
+            <Landmark className="w-4 h-4" />
+            <span>AFCHL • Academia de Filosofia e Ciências Humanísticas Lucentina</span>
+          </div>
+          <p className="max-w-2xl mx-auto leading-relaxed">
+            Fundada em 12 de dezembro de 2013 no Rio de Janeiro, Brasil. Patrimônio Histórico e Cultural da Real Casa de Lucena. Signatária do Pacto Global das Nações Unidas (ONU).
+          </p>
+          <p className="text-[11px] text-slate-600">
+            A AFCHL é mantida de forma autônoma e voluntária. Não recebe subvenções do erário público governamental.
+          </p>
+          <div className="pt-4 border-t border-slate-900 text-slate-600">
+            © {new Date().getFullYear()} AFCHL. Todos os direitos reservados.
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+}
